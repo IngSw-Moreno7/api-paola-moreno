@@ -1,38 +1,31 @@
-.App {
-  text-align: center;
+.table-container {
+  width: 100%;
+  overflow-x: auto; 
+  padding: 20px;
+  box-sizing: border-box; 
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.data-table {
+  width: 100%;
+  border-collapse: collapse; 
+  background-color: #ffffff; 
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.data-table th, .data-table td {
+  border: 1px solid #000000; 
+  padding: 8px; 
+  text-align: center; 
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.data-table th {
+  background-color: #f4f4f4; 
+  font-weight: bold; 
 }
 
-.App-link {
-  color: #61dafb;
+.data-table tr:nth-child(even) {
+  background-color: #f9f9f9; /* Color alternativo para las filas */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.data-table tr:hover {
+  background-color: #e0e0e0; /* Color de fondo al pasar el ratón sobre una fila */
 }
