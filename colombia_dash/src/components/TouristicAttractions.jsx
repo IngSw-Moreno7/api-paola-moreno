@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import '../App.css';
 
 const TouristicAttractions = () => {
-  const [attractions, setAttractions] = useState([]);
-  const [groupedData, setGroupedData] = useState({});
+  const [groupedAttractions, setGroupedAttractions] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -18,10 +18,30 @@ const TouristicAttractions = () => {
 
         // Verificar que data sea un array
         if (Array.isArray(data)) {
-          setAttractions(data);
-          // Agrupar datos
-          const grouped = groupByDepartmentAndCity(data);
-          setGroupedData(grouped);
+          // Procesar y agrupar los datos
+          const groupedData = data.reduce((acc, attraction) => {
+            const departmentId = attraction.city.departmentId;
+            const cityId = attraction.city.id;
+
+            if (!acc[departmentId]) {
+              acc[departmentId] = {};
+            }
+
+            if (!acc[departmentId][cityId]) {
+              acc[departmentId][cityId] = {
+                cityName: attraction.city.name,
+                attractions: [],
+                count: 0,
+              };
+            }
+
+            acc[departmentId][cityId].attractions.push(attraction);
+            acc[departmentId][cityId].count += 1;
+
+            return acc;
+          }, {});
+
+          setGroupedAttractions(groupedData);
         } else {
           throw new Error('Data is not an array');
         }
@@ -35,46 +55,22 @@ const TouristicAttractions = () => {
     fetchAttractions();
   }, []); // El arreglo vacío asegura que solo se ejecute una vez al montar el componente
 
-  // Función para agrupar por departamento y ciudad
-  const groupByDepartmentAndCity = (data) => {
-    return data.reduce((acc, attraction) => {
-      const department = attraction.city.departmentId;
-      const city = attraction.city.name;
-
-      if (!acc[department]) {
-        acc[department] = {};
-      }
-
-      if (!acc[department][city]) {
-        acc[department][city] = { count: 0, attractions: [] };
-      }
-
-      acc[department][city].count += 1;
-      acc[department][city].attractions.push(attraction);
-
-      return acc;
-    }, {});
-  };
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
     <div>
       <h1>Atracciones Turísticas</h1>
-      {Object.keys(groupedData).map(department => (
-        <div key={department}>
-          <h2>Departamento: {department}</h2>
-          {Object.keys(groupedData[department]).map(city => (
-            <div key={city}>
-              <h3>Ciudad: {city}</h3>
-              <p>Conteo: {groupedData[department][city].count}</p>
+      {Object.keys(groupedAttractions).map(departmentId => (
+        <div key={departmentId}>
+          <h2>Departamento: {departmentId}</h2>
+          {Object.keys(groupedAttractions[departmentId]).map(cityId => (
+            <div key={cityId}>
+              <h3>Ciudad: {groupedAttractions[departmentId][cityId].cityName}</h3>
+              <p>Cantidad de atracciones: {groupedAttractions[departmentId][cityId].count}</p>
               <ul>
-                {groupedData[department][city].attractions.map(attraction => (
-                  <li key={attraction.id}>
-                    <h4>Nombre: {attraction.name}</h4>
-                    <p>Descripción: {attraction.description}</p>
-                  </li>
+                {groupedAttractions[departmentId][cityId].attractions.map(attraction => (
+                  <li key={attraction.id}>{attraction.name}</li>
                 ))}
               </ul>
             </div>
